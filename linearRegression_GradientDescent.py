@@ -8,7 +8,6 @@ def drawline():
 	x2=1
 	y2=m*x2+b
 
-	
 	#interpid is similar to map function in arduino
 	xx=interp1d([0,1],[0,width],fill_value="extrapolate")#for x
 	x1=int(xx(x1))
@@ -18,25 +17,19 @@ def drawline():
 	y2=int(yy(y2))
 	return(x1,x2,y1,y2)
 
-
-def linearRegression():
-	x_sum =0
-	y_sum =0
+def gradientDescent(m,b):
+	
+	learningRate=0.05
 	for i in range(len(data)):
-		x_sum+=data[i][0]
-		y_sum+=data[i][1]
+		x=data[i][0]
+		y=data[i][1]
 
-	x_mean=x_sum/len(data)
-	y_mean=y_sum/len(data)
+		guess=m*x+b
+		error=y-guess
+		m=m+(error*x)*learningRate
+		b=b+(error)*learningRate	
+		
 
-	m1=0
-	m2=0
-	for i in range(len(data)):
-		m1+=(data[i][0]-x_mean)*(data[i][0]-x_mean)
-		m2+=(data[i][1]-y_mean)*(data[i][1]-y_mean)
-
-	m=m1/m2
-	b=y_mean-m*x_mean
 	return m,b
 
 
@@ -51,6 +44,9 @@ screen=pygame.display.set_mode((width,height))
 
 bgcolor = 0, 0, 0
 screen.fill(bgcolor)
+
+m=0
+b=0
 while running :
 	event=pygame.event.poll()
 	if event.type==pygame.QUIT:
@@ -73,19 +69,18 @@ while running :
 
 		
 
-	m=1
-	b=0
 	if len(data)>1:	
-		m,b=linearRegression()
-		
+		m,b=gradientDescent(m,b)
 		
 	x1,x2,y1,y2=drawline() 
 	
 	pygame.draw.lines(screen,(255, 255, 255),True,((x1,y1),(x2,y2)), 5)
+
 	for i in data1:
 		pygame.draw.circle(screen, (255, 255, 255), i, 5)
 
 	pygame.display.flip()
 	screen.fill(bgcolor)
+
 
 		
